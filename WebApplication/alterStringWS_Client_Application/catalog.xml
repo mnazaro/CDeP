@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://localhost:8080/lowToUpper/lowToUpper?wsdl" uri="xml-resources/web-service-references/lowToUpper/wsdl/localhost_8080/lowToUpper/lowToUpper.wsdl"/>
+    <system systemId="http://localhost:8080/lowToUpper/lowToUpper?xsd=1" uri="xml-resources/web-service-references/lowToUpper/wsdl/localhost_8080/lowToUpper/lowToUpper.xsd_1.xsd"/>
+    <system systemId="http://localhost:8080/alterStringWSApplication/upperToLow?wsdl" uri="xml-resources/web-service-references/upperToLow/wsdl/localhost_8080/alterStringWSApplication/upperToLow.wsdl"/>
+    <system systemId="http://localhost:8080/alterStringWSApplication/upperToLow?xsd=1" uri="xml-resources/web-service-references/upperToLow/wsdl/localhost_8080/alterStringWSApplication/upperToLow.xsd_1.xsd"/>
+</catalog>

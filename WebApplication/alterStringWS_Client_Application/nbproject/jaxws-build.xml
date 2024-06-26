@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+        *** GENERATED FROM jax-ws.xml - DO NOT EDIT !                             ***
+        *** TO MODIFY wsimport options USE Web Service node -> Edit WS Attributes ***
+        *** TO CHANGE TARGETS GENERATED TO jaxws-build.xml COPY THOSE             ***
+        *** TARGETS TO ../build.xml AND MODIFY THAT FILE INSTEAD                  ***
+
+        --><project xmlns:xalan="http://xml.apache.org/xslt" xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3" xmlns:jaxws="http://www.netbeans.org/ns/jax-ws/1">
+    <!--
+                ===================
+                JAX-WS WSIMPORT SECTION
+                ===================
+            -->
+    <target name="wsimport-init" depends="init">
+        <mkdir dir="${build.generated.sources.dir}/jax-ws"/>
+        <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+            <classpath path="${libs.jaxws21.classpath}"/>
+        </taskdef>
+    </target>
+    <target name="wsimport-client-lowToUpper" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/lowToUpper"/>
+        <property name="wsdl-lowToUpper" location="xml-resources/web-service-references/lowToUpper/wsdl/localhost_8080/lowToUpper/lowToUpper.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/lowToUpper" destdir="${build.generated.dir}/jax-wsCache/lowToUpper" wsdl="${wsdl-lowToUpper}" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" fork="false" wsdlLocation="http://localhost:8080/lowToUpper/lowToUpper?wsdl" xnocompile="true" xendorsed="true">
+            <depends file="${wsdl-lowToUpper}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/lowToUpper"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/lowToUpper">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-lowToUpper" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/lowToUpper"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/org/me/lowupper"/>
+    </target>
+    <target name="wsimport-client-upperToLow" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/upperToLow"/>
+        <property name="wsdl-upperToLow" location="xml-resources/web-service-references/upperToLow/wsdl/localhost_8080/alterStringWSApplication/upperToLow.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/upperToLow" destdir="${build.generated.dir}/jax-wsCache/upperToLow" wsdl="${wsdl-upperToLow}" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" fork="false" wsdlLocation="http://localhost:8080/alterStringWSApplication/upperToLow?wsdl" xnocompile="true" xendorsed="true">
+            <depends file="${wsdl-upperToLow}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/upperToLow"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/upperToLow">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-upperToLow" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/upperToLow"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/org/me/uppertolow"/>
+    </target>
+    <target name="wsimport-client-generate" depends="wsimport-client-lowToUpper, wsimport-client-upperToLow"/>
+</project>
