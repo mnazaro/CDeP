@@ -1,8 +1,10 @@
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.List;
 
-public interface Compute {
-    int sum(List<Integer> numbers);
-    List<Integer> primeNumbers(int start, int end);
-    String toUpperCase(String text);
-    long factorial(int number);
+public interface Compute extends Remote {
+    int sum(List<Integer> numbers) throws RemoteException;
+    List<Integer> primeNumbers(int start, int end) throws RemoteException;
+    String toUpperCase(String text) throws RemoteException;
+    long factorial(int number) throws RemoteException;
 }

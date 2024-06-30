@@ -1,44 +1,52 @@
-// import org.jgroups.JChannel;
-// import org.jgroups.Message;
-// import org.jgroups.ReceiverAdapter;
-// import org.jgroups.View;
-
+// import java.io.*;
+// import java.net.*;
+// import java.rmi.registry.LocateRegistry;
+// import java.rmi.registry.Registry;
 // import java.util.Arrays;
 // import java.util.List;
 
-// public class Servidor extends ReceiverAdapter {
-//     private JChannel channel;
+// public class Server {
+//     public static void main(String[] args) {
+//         try {
+//             ServerSocket serverSocket = new ServerSocket(5000);
+//             System.out.println("Server is running...");
+
+//             Registry registry = LocateRegistry.getRegistry();
+//             Compute compute = (Compute) registry.lookup("Compute");
+
+//             while (true) {
+//                 Socket clientSocket = serverSocket.accept();
+//                 new Thread(new ClientHandler(clientSocket, compute)).start();
+//             }
+//         } catch (Exception e) {
+//             e.printStackTrace();
+//         }
+//     }
+// }
+
+// class ClientHandler implements Runnable {
+//     private Socket clientSocket;
 //     private Compute compute;
 
-//     public static void main(String[] args) throws Exception {
-//         new Servidor().start();
-//     }
-
-//     private void start() throws Exception {
-//         channel = new JChannel();
-//         channel.setReceiver(this);
-//         channel.connect("ServiceCluster");
-
-//         compute = new ComputeEngine();
-//         eventLoop();
-//         channel.close();
-//     }
-
-//     private void eventLoop() throws Exception {
-//         while (true) {
-//             // Aguarda mensagens de clientes
-//         }
+//     public ClientHandler(Socket clientSocket, Compute compute) {
+//         this.clientSocket = clientSocket;
+//         this.compute = compute;
 //     }
 
 //     @Override
-//     public void receive(Message msg) {
-//         String[] parts = msg.getObject().toString().split(":");
-//         String service = parts[0];
-//         String data = parts[1];
+//     public void run() {
+//         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+//              PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
 
-//         String result = "";
+//             String request = in.readLine();
+//             String[] parts = request.split(":");
+//             String service = parts[0];
+//             String data = parts[1];
 
-//         try {
+//             System.out.println("Server: Service " + service + " requested with data: " + data);
+
+//             String result = "";
+
 //             switch (service) {
 //                 case "1":
 //                     List<Integer> numbers = Arrays.asList(data.split(",")).stream().map(Integer::parseInt).toList();
@@ -58,112 +66,56 @@
 //                     result = String.valueOf(compute.factorial(number));
 //                     break;
 //             }
+
+//             System.out.println("Server: Service " + service + " completed with result: " + result);
+//             out.println(result);
+
 //         } catch (Exception e) {
 //             e.printStackTrace();
 //         }
-
-//         try {
-//             channel.send(new Message(msg.getSrc(), result));
-//         } catch (Exception e) {
-//             e.printStackTrace();
-//         }
-//     }
-
-//     @Override
-//     public void viewAccepted(View new_view) {
-//         System.out.println("** view: " + new_view);
 //     }
 // }
 
-import org.jgroups.JChannel;
-import org.jgroups.Message;
-import org.jgroups.ReceiverAdapter;
-import org.jgroups.View;
+import java.io.*;
+import java.net.*;
 
-import java.util.Arrays;
-import java.util.List;
+public class Server {
+    public static void main(String[] args) throws IOException {
+        int port = 12345; // Porta que o servidor estará ouvindo
+        ServerSocket serverSocket = new ServerSocket(port);
+        System.out.println("Servidor iniciado na porta " + port);
 
-public class Server extends ReceiverAdapter {
-    private JChannel channel;
-    private Compute compute;
-    private String chosenOption = null;
-
-    public static void main(String[] args) throws Exception {
-        new Server().start();
-    }
-
-    private void start() throws Exception {
-        channel = new JChannel();
-        channel.setReceiver(this);
-        channel.connect("ServiceCluster");
-
-        compute = new ComputeEngine();
-        eventLoop();
-        channel.close();
-    }
-
-    private void eventLoop() throws Exception {
         while (true) {
-            // Aguarda mensagens de clientes
+            Socket clientSocket = serverSocket.accept();
+            new Thread(new ClientHandler(clientSocket)).start();
         }
     }
 
-    @Override
-    public void receive(Message msg) {
-        if (msg.getObject() instanceof String) {
-            String message = (String) msg.getObject();
+    private static class ClientHandler implements Runnable {
+        private Socket clientSocket;
 
-            if (message.equals("exit")) {
-                System.out.println("Client has exited.");
-                return;
-            }
-
-            if (chosenOption == null) {
-                chosenOption = message;
-                System.out.println("Service chosen: " + chosenOption);
-            } else {
-                processRequest(chosenOption, message, msg);
-                chosenOption = null;
-            }
-        }
-    }
-
-    private void processRequest(String service, String data, Message msg) {
-        String result = "";
-
-        try {
-            switch (service) {
-                case "1":
-                    List<Integer> numbers = Arrays.asList(data.split(",")).stream().map(Integer::parseInt).toList();
-                    result = String.valueOf(compute.sum(numbers));
-                    break;
-                case "2":
-                    String[] range = data.split(",");
-                    int start = Integer.parseInt(range[0]);
-                    int end = Integer.parseInt(range[1]);
-                    result = compute.primeNumbers(start, end).toString();
-                    break;
-                case "3":
-                    result = compute.toUpperCase(data);
-                    break;
-                case "4":
-                    int number = Integer.parseInt(data);
-                    result = String.valueOf(compute.factorial(number));
-                    break;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        public ClientHandler(Socket socket) {
+            this.clientSocket = socket;
         }
 
-        try {
-            channel.send(new Message(msg.getSrc(), result));
-        } catch (Exception e) {
-            e.printStackTrace();
+        public void run() {
+            try {
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    System.out.println("Mensagem recebida: " + inputLine);
+                    out.println("Mensagem recebida: " + inputLine);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-    }
-
-    @Override
-    public void viewAccepted(View new_view) {
-        System.out.println("** view: " + new_view);
     }
 }
